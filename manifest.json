@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "opsbuy 2",
+  "description": "buys things",
+  "version": "0.0.1",
+  "author": "Nuno Silva",
+  "browser_action": {
+    "background": {
+      "scripts": ["background.js", "app.js"],
+      "persistent":true
+    },
+    "default_popup": "index.html" 
+  },
+  "icons": {
+    "128": "socketIO.png"
+  },
+  "permissions": [
+    "storage",
+    "notifications",
+    "*://opskins.com/*",
+    "http://*/",
+    "https://*/",
+    "https://opskins.com/",
+    "http://opskins.com/",
+    "cookies"
+  ]
+}

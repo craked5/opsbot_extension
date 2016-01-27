@@ -1,3 +1,4 @@
+/*
 window.onload = function() {
     document.getElementById("button").onclick = function() {
         var __cfduid = document.getElementById("__cfduid").value;
@@ -9,6 +10,7 @@ window.onload = function() {
         console.log(opskins_buy_headers)
     };
 };
+*/
 
 var opskins_buy_data = {
     "action":"buy",
@@ -21,17 +23,19 @@ var opskins_add_to_cart_data = {
     'id':''
 };
 var added_products = false;
-var add_product_url = "";
-var buy_url = "";
+var add_product_url = "https://opskins.com/ajax/shop_account.php";
+var buy_url = "https://opskins.com/ajax/shop_buy_item.php";
 var headers_cookies = "";
-var set_headers_cookies_bool = false;
+//var set_headers_cookies_bool = false;
 
 var opskins_buy_headers = {
-
+    'x-csrf':'yZJmNCyAZe93HuZF3CnJxKWnMLDVsOuQ',
+    'x-steamid':'76561197979199766',
+    'x-requested-with':'XMLHttpRequest'
 };
 
 
-var socket = io('http://104.196.38.235:80');
+var socket = io('http://104.196.32.148:80');
 console.log(socket.io.uri);
 
 /**
@@ -67,36 +71,8 @@ function post(url, data, callback, headers) {
         }
     }
 
-    // save lastRequest for later re-sending
-    lastRequest = {
-        url: url,
-        data: data,
-        headers: headers
-    };
-
     // send
     xhr.send(formatted);
-}
-
-/**
- * Perform a GET request to a url
- * @param string url - The URL to request to
- * @param function callback - The function to call once the request is performed
- */
-function get(url, callback) {
-    // create xmlhttprequest instance
-    // we assume all supported browsers have XMLHttpRequest
-    var xhr = new XMLHttpRequest();
-
-    // init
-    xhr.addEventListener("load", callback);
-    xhr.onerror = function () {
-        callback.apply({status: 0, statusText: "Connection error"});
-    };
-    xhr.open("GET", url, true);
-
-    // send
-    xhr.send();
 }
 
 var set_headers_cookies =  function(__cfduid, opskins_csrf, PHPSESSID, avatar, cf_clearance) {
@@ -122,23 +98,22 @@ socket.on('buy_list', function (msg){
 
     console.log(buy_list2);
     
-    if(set_headers_cookies_bool === true){
-        for(i=0; i < buy_list2.length; i++) {
-            opskins_add_to_cart_data["id"] = buy_list2[i];
-            post(add_product_url, opskins_add_to_cart_data, log, opskins_buy_headers);
-            console.log(buy_list2[i]);
-            added_products = true;
-        }
-    } else {
-        console.log("cant buy because headers not set yet!");
+    //if(set_headers_cookies_bool === true){
+    for(i=0; i < buy_list2.length; i++) {
+        opskins_add_to_cart_data["id"] = buy_list2[i];
+        post(add_product_url, opskins_add_to_cart_data, log, opskins_buy_headers);
+        console.log(buy_list2[i]);
+        added_products = true;
     }
-    /*
+    //} else {
+      //  console.log("cant buy because headers not set yet!");
+    //}
+
     if (added_products === true){
         added_products = false;
         post(buy_url, opskins_buy_data, log, opskins_buy_headers);
-
     }
-    */
+
     //make a post to buy all the items in the cart
     socket.emit("ready",{"ready":"i am ready to start buying"});
     console.log("emited ready");

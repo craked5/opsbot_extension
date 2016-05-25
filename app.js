@@ -1,16 +1,12 @@
-/*
+
 window.onload = function() {
     document.getElementById("button").onclick = function() {
-        var __cfduid = document.getElementById("__cfduid").value;
-        var cf_clearance = parseInt(document.getElementById("cf_clearance").value);
-        var opskins_csrf = document.getElementById("opskins_csrf").value;
-        var PHPSESSID = parseInt(document.getElementById("PHPSESSID").value);
-        var avatar = document.getElementById("avatar").value;
-        set_headers_cookies(__cfduid, opskins_csrf, PHPSESSID, avatar, cf_clearance);
-        console.log(opskins_buy_headers)
+        var server_url_temp = document.getElementById("server_url").value;
+        socket = io(server_url_temp);
+        set_server_url_bool = true;
+        $( ".main" ).append( "<p>THIS EXTENSION IS WORKING!</p>" + "<p>YOU SHOULD SEE STUFF HAPPENING IN THE BOT!!</p>");
     };
 };
-*/
 
 var opskins_buy_data = {
     "action":"buy",
@@ -22,21 +18,19 @@ var opskins_add_to_cart_data = {
     'param':'add',
     'id':''
 };
+
+var socket;
 var added_products = false;
 var add_product_url = "https://opskins.com/ajax/shop_account.php";
 var buy_url = "https://opskins.com/ajax/shop_buy_item.php";
 var headers_cookies = "";
-//var set_headers_cookies_bool = false;
+var set_server_url_bool = false;
 
 var opskins_buy_headers = {
     'x-csrf':'yZJmNCyAZe93HuZF3CnJxKWnMLDVsOuQ',
     'x-steamid':'76561197979199766',
     'x-requested-with':'XMLHttpRequest'
 };
-
-
-var socket = io('http://104.196.32.148:80');
-console.log(socket.io.uri);
 
 /**
  * Perform a POST request to a url
@@ -75,21 +69,14 @@ function post(url, data, callback, headers) {
     xhr.send(formatted);
 }
 
-var set_headers_cookies =  function(__cfduid, opskins_csrf, PHPSESSID, avatar, cf_clearance) {
-
-    headers_cookies = "__cfduid="+ __cfduid +"; opskins_csrf="+ opskins_csrf +";  PHPSESSID=" + PHPSESSID + "; avatar=" + avatar + "; cf_clearance=" + cf_clearance + "; timezone_offset=0%2C0";
-    opskins_buy_headers["Cookie"] = "__cfduid="+ __cfduid +"; opskins_csrf="+ opskins_csrf +";  PHPSESSID=" + PHPSESSID + "; avatar=" + avatar + "; cf_clearance=" + cf_clearance + "; timezone_offset=0%2C0";
-    set_headers_cookies_bool = true;
-};
+function log (stuff){
+    console.log(stuff);
+}
 
 socket.on('connect', function () {
         console.log("connected to server good");
         socket.emit("ready", {"ready":"i am ready to start buying"});
 });
-
-function log (stuff){
-    console.log(stuff);
-}
 
 socket.on('buy_list', function (msg){
 
@@ -98,16 +85,16 @@ socket.on('buy_list', function (msg){
 
     console.log(buy_list2);
     
-    //if(set_headers_cookies_bool === true){
-    for(i=0; i < buy_list2.length; i++) {
-        opskins_add_to_cart_data["id"] = buy_list2[i];
-        post(add_product_url, opskins_add_to_cart_data, log, opskins_buy_headers);
-        console.log(buy_list2[i]);
-        added_products = true;
+    if(set_server_url_bool){
+        for(i=0; i < buy_list2.length; i++) {
+            opskins_add_to_cart_data["id"] = buy_list2[i];
+            post(add_product_url, opskins_add_to_cart_data, log, opskins_buy_headers);
+            console.log(buy_list2[i]);
+            added_products = true;
+        }
+    } else {
+        console.log("Please set the URL!");
     }
-    //} else {
-      //  console.log("cant buy because headers not set yet!");
-    //}
 
     if (added_products === true){
         added_products = false;

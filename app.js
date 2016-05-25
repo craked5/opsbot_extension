@@ -23,7 +23,6 @@ var socket;
 var added_products = false;
 var add_product_url = "https://opskins.com/ajax/shop_account.php";
 var buy_url = "https://opskins.com/ajax/shop_buy_item.php";
-var headers_cookies = "";
 var set_server_url_bool = false;
 
 var opskins_buy_headers = {

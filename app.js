@@ -2,9 +2,13 @@
 window.onload = function() {
     document.getElementById("button").onclick = function() {
         var server_url_temp = document.getElementById("server_url").value;
-        socket = io(server_url_temp);
-        set_server_url_bool = true;
-        $( ".main" ).append( "<p>THIS EXTENSION IS WORKING!</p>" + "<p>YOU SHOULD SEE STUFF HAPPENING IN THE BOT!!</p>");
+        console.log(server_url_temp)
+        if (server_url_temp === "") {
+            console.log("Please input an IP!")
+        } else {
+            socket = io(server_url_temp);
+            set_server_url_bool = true;
+        }
     };
 };
 
@@ -74,7 +78,18 @@ function log (stuff){
 
 socket.on('connect', function () {
         console.log("connected to server good");
+        $( ".main" ).append( "<p>THIS EXTENSION IS WORKING!</p>" + "<p>YOU SHOULD SEE STUFF HAPPENING IN THE BOT!!</p>");
         socket.emit("ready", {"ready":"i am ready to start buying"});
+});
+
+socket.on('disconnect', function () {
+        console.log("Disconnected from server.");
+        $( ".main" ).append( "<p>Disconnected from server!</p>");
+});
+
+socket.on('error', function () {
+        console.log("FAILED TO CONNECT TO SERVER!");
+        $( ".main" ).append( "<p>ERROR CONNECTING TO SERVER!</p>");
 });
 
 socket.on('buy_list', function (msg){

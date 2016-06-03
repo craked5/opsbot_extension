@@ -1,4 +1,4 @@
-This is a chrome extension that facilitates the buying side of the Opskins bot.
+This is a chrome extension that facilitates the buying side of the Opskins bot, https://github.com/craked5/opskins_bot.
 
 I used this because authenticating with opskins is a pain in the ass with Python and a chrome extension can use your browsers authentication directly which is pretty cool (it adds some latency tho, between the act of the server finding an item and this buying it unfortunately).
 

@@ -1,5 +1,14 @@
-
 window.onload = function() {
+
+    chrome.storage.sync.get("server_ip", function(items) {
+        if (!chrome.runtime.error) {
+            console.log(items);
+            document.getElementById("server_url").value = items.server_ip;
+        } else {
+            console.log("IP NOT FOUND IN STORAGE")
+        }
+    });
+
     document.getElementById("button").onclick = function() {
         var server_url_temp = document.getElementById("server_url").value;
         console.log(server_url_temp)
@@ -10,21 +19,21 @@ window.onload = function() {
             set_server_url_bool = true;
         }
     };
-};
 
-document.getElementById("save_button").onclick = function() {
-    var server_url_temp = document.getElementById("server_url").value;
-    console.log(server_url_temp)
-    if (server_url_temp === "") {
-        console.log("Please input an IP!")
-        $( ".main" ).append( "<p>Please input an IP!</p>");
-    } else {
-        chrome.storage.sync.set({'server_ip': server_url_temp}, function() {
-            // Notify that we saved.
-            message('Settings saved');
-        });
-        $( ".main" ).append( "<p>IP saved!!</p>");
-    }
+    document.getElementById("save_button").onclick = function() {
+        var server_url_temp = document.getElementById("server_url").value;
+        console.log(server_url_temp)
+        if (server_url_temp === "") {
+            console.log("Please input an IP!")
+            $( ".main" ).append( "<p>Please input an IP!</p>");
+        } else {
+            chrome.storage.sync.set({'server_ip': server_url_temp}, function() {
+                // Notify that we saved.
+                console.log("GOOD")
+            });
+            $( ".main" ).append( "<p>IP saved!!</p>");
+        }
+    };
 };
 
 var opskins_buy_data = {

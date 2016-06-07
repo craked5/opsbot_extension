@@ -30,8 +30,8 @@ window.onload = function() {
             chrome.storage.sync.set({'server_ip': server_url_temp}, function() {
                 // Notify that we saved.
                 console.log("GOOD")
+                $( ".main" ).append( "<p>IP saved!!</p>");
             });
-            $( ".main" ).append( "<p>IP saved!!</p>");
         }
     };
 };

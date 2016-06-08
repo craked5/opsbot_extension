@@ -20,6 +20,22 @@ window.onload = function() {
         }
     };
 
+    document.getElementById("start_bot_button").onclick = function() {
+        if (socket === null) {
+            console.log("Please connect to server first!!")
+        } else {
+            socket.emit(socket.emit("start_bot", {"start":"start bot please!"}));
+        }
+    };
+
+    document.getElementById("stop_bot_button").onclick = function() {
+        if (socket === null) {
+            console.log("Please connect to server first!!")
+        } else {
+            socket.emit(socket.emit("stop_bot", {"stop_bot":"stop bot please!"}));
+        }
+    };
+
     document.getElementById("save_button").onclick = function() {
         var server_url_temp = document.getElementById("server_url").value;
         console.log(server_url_temp)
@@ -114,6 +130,14 @@ socket.on('disconnect', function () {
 socket.on('error', function () {
         console.log("FAILED TO CONNECT TO SERVER!");
         $( ".main" ).append( "<p>ERROR CONNECTING TO SERVER!</p>");
+});
+
+socket.on('bot_started', function (data) {
+        console.log(data);
+});
+
+socket.on('bot_stopped', function (data) {
+        console.log(data);
 });
 
 socket.on('buy_list', function (msg){

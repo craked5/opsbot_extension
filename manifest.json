@@ -6,7 +6,7 @@
   "author": "Nuno Silva",
   "browser_action": {
     "background": {
-      "scripts": ["background.js", "app.js"],
+      "scripts": ["jquery.min.js", "background.js", "app.js"],
       "persistent":true
     },
     "default_popup": "index.html" 

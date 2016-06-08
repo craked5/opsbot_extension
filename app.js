@@ -11,11 +11,12 @@ window.onload = function() {
 
     document.getElementById("button").onclick = function() {
         var server_url_temp = document.getElementById("server_url").value;
-        console.log(server_url_temp)
+        console.log(server_url_temp);
         if (server_url_temp === "") {
             console.log("Please input an IP!")
         } else {
             socket = io(server_url_temp);
+            socketReady(socket);
             set_server_url_bool = true;
         }
     };
@@ -24,7 +25,7 @@ window.onload = function() {
         if (socket === null) {
             console.log("Please connect to server first!!")
         } else {
-            socket.emit(socket.emit("start_bot", {"start":"start bot please!"}));
+            socket.emit("start_bot", {"start":"start bot please!"});
         }
     };
 
@@ -32,20 +33,20 @@ window.onload = function() {
         if (socket === null) {
             console.log("Please connect to server first!!")
         } else {
-            socket.emit(socket.emit("stop_bot", {"stop_bot":"stop bot please!"}));
+            socket.emit("stop_bot", {"stop_bot":"stop bot please!"});
         }
     };
 
     document.getElementById("save_button").onclick = function() {
         var server_url_temp = document.getElementById("server_url").value;
-        console.log(server_url_temp)
+        console.log(server_url_temp);
         if (server_url_temp === "") {
-            console.log("Please input an IP!")
+            console.log("Please input an IP!");
             $( ".main" ).append( "<p>Please input an IP!</p>");
         } else {
             chrome.storage.sync.set({'server_ip': server_url_temp}, function() {
                 // Notify that we saved.
-                console.log("GOOD")
+                console.log("GOOD");
                 $( ".main" ).append( "<p>IP saved!!</p>");
             });
         }
@@ -116,54 +117,61 @@ function log (stuff){
     console.log(stuff);
 }
 
-socket.on('connect', function () {
-        console.log("connected to server good");
+function socketReady (socket) {
+
+    socket.on('connect', function () {
+        console.log("Connected to the server! ");
         $( ".main" ).append( "<p>THIS EXTENSION IS WORKING!</p>" + "<p>YOU SHOULD SEE STUFF HAPPENING IN THE BOT!!</p>");
-        socket.emit("ready", {"ready":"i am ready to start buying"});
-});
+    });
 
-socket.on('disconnect', function () {
-        console.log("Disconnected from server.");
-        $( ".main" ).append( "<p>Disconnected from server!</p>");
-});
+    socket.on('disconnect', function () {
+            console.log("Disconnected from server.");
+            $( ".main" ).append( "<p>Disconnected from server!</p>");
+    });
 
-socket.on('error', function () {
-        console.log("FAILED TO CONNECT TO SERVER!");
-        $( ".main" ).append( "<p>ERROR CONNECTING TO SERVER!</p>");
-});
+    socket.on('error', function () {
+            console.log("FAILED TO CONNECT TO SERVER!");
+            $( ".main" ).append( "<p>ERROR CONNECTING TO SERVER!</p>");
+    });
 
-socket.on('bot_started', function (data) {
-        console.log(data);
-});
+    socket.on('bot_started', function (msg) {
+        console.log(msg)
+    });
 
-socket.on('bot_stopped', function (data) {
-        console.log(data);
-});
 
-socket.on('buy_list', function (msg){
+    socket.on('bot_started_false', function (msg) {
+        console.log(msg)
+    });
 
-    console.log("received stuff to buy, trying");
-    var buy_list2 = msg.split(',');
+    socket.on('bot_stopped', function (msg) {
+        console.log(msg)
+    });
 
-    console.log(buy_list2);
-    
-    if(set_server_url_bool){
-        for(i=0; i < buy_list2.length; i++) {
-            opskins_add_to_cart_data["id"] = buy_list2[i];
-            post(add_product_url, opskins_add_to_cart_data, log, opskins_buy_headers);
-            console.log(buy_list2[i]);
-            added_products = true;
+    socket.on('buy_list', function (msg){
+
+        console.log("received stuff to buy, trying");
+        var buy_list2 = msg.split(',');
+
+        console.log(buy_list2);
+
+        if(set_server_url_bool){
+            for(i=0; i < buy_list2.length; i++) {
+                opskins_add_to_cart_data["id"] = buy_list2[i];
+                post(add_product_url, opskins_add_to_cart_data, log, opskins_buy_headers);
+                console.log(buy_list2[i]);
+                added_products = true;
+            }
+        } else {
+            console.log("Please set the URL!");
         }
-    } else {
-        console.log("Please set the URL!");
-    }
 
-    if (added_products === true){
-        added_products = false;
-        post(buy_url, opskins_buy_data, log, opskins_buy_headers);
-    }
+        if (added_products === true){
+            added_products = false;
+            post(buy_url, opskins_buy_data, log, opskins_buy_headers);
+        }
 
-    //make a post to buy all the items in the cart
-    socket.emit("ready",{"ready":"i am ready to start buying"});
-    console.log("emited ready");
-});
+        //make a post to buy all the items in the cart
+        socket.emit("ready",{"ready":"i am ready to start buying"});
+        console.log("emited ready");
+    });
+}

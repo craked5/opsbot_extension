@@ -6,6 +6,7 @@ window.onload = function() {
             document.getElementById("server_url").value = items.server_ip;
         } else {
             console.log("IP NOT FOUND IN STORAGE")
+            $( "#main" ).append( "<p>IP not found in storage!!</p>");
         }
     });
 
@@ -17,6 +18,7 @@ window.onload = function() {
         } else {
             socket = io(server_url_temp);
             socketReady(socket);
+            socket.emit("opskins_balance", {"ops_bal":"please give me the ops balance!"})
             set_server_url_bool = true;
         }
     };
@@ -32,6 +34,7 @@ window.onload = function() {
     document.getElementById("stop_bot_button").onclick = function() {
         if (socket === null) {
             console.log("Please connect to server first!!")
+            $( "#main" ).append( "<p>Please connect to server first!!</p>");
         } else {
             socket.emit("stop_bot", {"stop_bot":"stop bot please!"});
         }
@@ -42,12 +45,12 @@ window.onload = function() {
         console.log(server_url_temp);
         if (server_url_temp === "") {
             console.log("Please input an IP!");
-            $( ".main" ).append( "<p>Please input an IP!</p>");
+            $( "#main" ).append( "<p>Please input an IP!</p>");
         } else {
             chrome.storage.sync.set({'server_ip': server_url_temp}, function() {
                 // Notify that we saved.
                 console.log("GOOD");
-                $( ".main" ).append( "<p>IP saved!!</p>");
+                $( "#main" ).append( "<p>IP saved!!</p>");
             });
         }
     };
@@ -121,31 +124,39 @@ function socketReady (socket) {
 
     socket.on('connect', function () {
         console.log("Connected to the server! ");
-        $( ".main" ).append( "<p>THIS EXTENSION IS WORKING!</p>" + "<p>YOU SHOULD SEE STUFF HAPPENING IN THE BOT!!</p>");
+        $( "#main" ).append( "<p>Connected to the server!</p>");
     });
 
     socket.on('disconnect', function () {
             console.log("Disconnected from server.");
-            $( ".main" ).append( "<p>Disconnected from server!</p>");
+            $( "#main" ).append( "<p>Disconnected from server!</p>");
     });
 
     socket.on('error', function () {
             console.log("FAILED TO CONNECT TO SERVER!");
-            $( ".main" ).append( "<p>ERROR CONNECTING TO SERVER!</p>");
+            $( "#main" ).append( "<p>ERROR CONNECTING TO SERVER!</p>");
     });
 
     socket.on('bot_started', function (msg) {
+        $( "#main" ).append( "<p>The bot has started searching Opskins!</p>");
         console.log(msg)
     });
 
 
     socket.on('bot_started_false', function (msg) {
+        $( "#main" ).append( "<p>Could not start the bot!</p>");
         console.log(msg)
     });
 
     socket.on('bot_stopped', function (msg) {
+        $( "#main" ).append( "<p>The bot has been stopped!!</p>");
         console.log(msg)
     });
+
+    socket.on('opskins_balance', function (msg) {
+        $( "#opskins_balance" ).replaceWith( "<p>Opskins balance: " + msg + "</p>");
+        console.log(msg)
+    })
 
     socket.on('buy_list', function (msg){
 
@@ -171,7 +182,9 @@ function socketReady (socket) {
         }
 
         //make a post to buy all the items in the cart
+        socket.emit("opskins_balance", {"ops_bal":"please give me the ops balance!"})
         socket.emit("ready",{"ready":"i am ready to start buying"});
+        $( "#main" ).append( "<p>Just tried to buy some items!!!</p>");
         console.log("emited ready");
     });
 }
